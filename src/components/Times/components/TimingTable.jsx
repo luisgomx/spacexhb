@@ -93,7 +93,7 @@ const TimingTable = () => {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
         <h2 className="mb-4 text-center text-lg font-bold">
           Workers Without Timing
