@@ -11,7 +11,9 @@ const Workers = () => {
   // Function to fetch workers from the server
   const fetchWorkers = async () => {
     try {
-      const response = await fetch("/api/workers");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/workers`,
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch workers");
       }

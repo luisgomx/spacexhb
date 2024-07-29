@@ -10,7 +10,9 @@ const TimingTable = () => {
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
-        const response = await fetch("/api/workers/timing");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/workers/timing`,
+        );
         if (response.ok) {
           const data = await response.json();
           setWorkers(data);
@@ -54,7 +56,9 @@ const TimingTable = () => {
   // Handle manual refresh
   const refreshWorkers = async () => {
     try {
-      const response = await fetch("/api/workers/timing");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/workers/timing`,
+      );
       if (response.ok) {
         const data = await response.json();
         setWorkers(data);
@@ -69,11 +73,14 @@ const TimingTable = () => {
   // Handle actions to start, pause, or confirm timing
   const handleTimingAction = async (usuario, action) => {
     try {
-      const response = await fetch("/api/timing", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usuario, action }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/timing`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usuario, action }),
+        },
+      );
 
       if (response.ok) {
         await refreshWorkers(); // Refresh worker data after action

@@ -48,13 +48,16 @@ const WorkerForm: React.FC<{ onWorkerAdded: () => void }> = ({
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/worker", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/worker`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData),
-      });
+      );
 
       if (response.ok) {
         onWorkerAdded();

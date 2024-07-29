@@ -17,6 +17,8 @@ interface AuthContextProps {
   username: string;
 }
 
+const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 // Create Context with a default value
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
@@ -46,7 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Example login function
   const login = async (name: string, password: string) => {
-    const response = await fetch("/api/login", {
+    const response = await fetch(`${apiUrl}/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, password }),
@@ -67,11 +69,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     name: string,
     password: string,
   ): Promise<string | undefined> => {
-    const response = await fetch("/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, password }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password }),
+      },
+    );
 
     if (response.ok) {
       return "User registered";
