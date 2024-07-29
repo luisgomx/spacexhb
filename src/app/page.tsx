@@ -13,11 +13,11 @@ export default function Home() {
   return (
     <>
       <AuthProvider>
-        <DefaultLayout>
-          <ProtectedRoute>
+        <ProtectedRoute>
+          <DefaultLayout>
             <h1>BIENVENIDO</h1>
-          </ProtectedRoute>
-        </DefaultLayout>
+          </DefaultLayout>
+        </ProtectedRoute>
       </AuthProvider>
     </>
   );
