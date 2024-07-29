@@ -25,9 +25,9 @@ const UserProfile: React.FC = () => {
         </div>
         <div className="space-y-3">
           <p>{username}</p>
-          <p>MSK</p>
+          {/* <p>MSK</p>
           <p>CIA Recluta</p>
-          <p>3h 21min</p>
+          <p>3h 21min</p> */}
         </div>
       </div>
     </div>

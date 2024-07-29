@@ -13,13 +13,11 @@ const Profile = () => {
           <div className="col-span-1">
             <UserProfile />
           </div>
-          <div className="col-span-1 md:w-150">
-            <UserInfo />
-          </div>
+          <div className="col-span-1 md:w-150">{/* <UserInfo /> */}</div>
         </div>
-        <div className="col-span-1">
+        {/* <div className="col-span-1">
           <TableOne />
-        </div>
+        </div> */}
       </div>
     </div>
   );
