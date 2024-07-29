@@ -3,12 +3,14 @@
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
 
 const SignUpPage = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
   const { signUp } = useAuth();
   const { push } = useRouter();
 
@@ -20,9 +22,12 @@ const SignUpPage = () => {
       return;
     }
 
+    setIsLoading(true); // Set loading state to true
     const message = await signUp(name, password);
+    setIsLoading(false); // Set loading state to false
+
     if (message === "User registered") {
-      push("/profile");
+      push("/login");
     } else {
       alert(message);
     }
@@ -93,9 +98,33 @@ const SignUpPage = () => {
           </div>
           <button
             type="submit"
-            className="w-full rounded-lg bg-purple-500 p-3 font-semibold text-white transition hover:bg-purple-600"
+            className="w-full rounded-lg bg-purple-500 p-3 font-semibold text-white transition hover:bg-purple-600 disabled:bg-purple-300"
+            disabled={isLoading} // Disable button while loading
           >
-            Registrarse
+            {isLoading ? (
+              <svg
+                className="mx-auto h-5 w-5 animate-spin text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8v-8H4z"
+                ></path>
+              </svg>
+            ) : (
+              "Registrarse"
+            )}
           </button>
         </form>
         <div className="mt-4 rounded-lg bg-white p-2 text-center">

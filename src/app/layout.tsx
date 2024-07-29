@@ -3,6 +3,7 @@ import "jsvectormap/dist/jsvectormap.css";
 import "flatpickr/dist/flatpickr.min.css";
 import "@/css/satoshi.css";
 import "@/css/style.css";
+import "react-toastify/dist/ReactToastify.css";
 import React, { useEffect, useState } from "react";
 import RocketAnimation from "@/components/RocketAnimation/RocketAnimation";
 import { AuthProvider } from "@/context/AuthContext";
