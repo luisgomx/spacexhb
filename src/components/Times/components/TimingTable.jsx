@@ -6,7 +6,7 @@ const TimingTable = () => {
   const [activeTimingWorkers, setActiveTimingWorkers] = useState([]);
   const [pausedTimingWorkers, setPausedTimingWorkers] = useState([]);
 
-  // Fetch worker data initially and periodically
+  // Fetch worker data initially
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
@@ -25,9 +25,6 @@ const TimingTable = () => {
     };
 
     fetchWorkers();
-    const interval = setInterval(fetchWorkers, 10000); // Refresh every 10 seconds
-
-    return () => clearInterval(interval); // Clean up the interval on component unmount
   }, []);
 
   // Categorize workers every time the workers array updates
@@ -95,9 +92,7 @@ const TimingTable = () => {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
-        <h2 className="mb-4 text-center text-lg font-bold">
-          Workers Without Timing
-        </h2>
+        <h2 className="mb-4 text-center text-lg font-bold">Trabajadores</h2>
         <table className="w-full text-left text-sm text-white rtl:text-right">
           <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">
             <tr>
@@ -144,7 +139,7 @@ const TimingTable = () => {
       </div>
       <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
         <h2 className="mb-4 text-center text-lg font-bold">
-          Workers with Active Timing
+          Trabajores con time
         </h2>
         <table className="w-full text-left text-sm text-white rtl:text-right">
           <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">
@@ -200,7 +195,7 @@ const TimingTable = () => {
       </div>
       <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
         <h2 className="mb-4 text-center text-lg font-bold">
-          Workers with Paused Timing
+          Trabajadores pausados
         </h2>
         <table className="w-full text-left text-sm text-white rtl:text-right">
           <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">

@@ -7,6 +7,7 @@ import WorkersTable from "./components/workersTable";
 
 const Workers = () => {
   const [workers, setWorkers] = useState([]);
+  const [triggerWorkers, setTriggerWorkers] = useState(false);
 
   // Function to fetch workers from the server
   const fetchWorkers = async () => {
@@ -27,7 +28,7 @@ const Workers = () => {
   // Fetch workers when the component mounts
   useEffect(() => {
     fetchWorkers();
-  }, []);
+  }, [triggerWorkers]);
 
   // Function to handle when a new worker is added
   const handleWorkerAdded = () => {
@@ -43,7 +44,11 @@ const Workers = () => {
           </div>
         </div>
         <div className="col-span-1">
-          <WorkersTable workers={workers} />
+          <WorkersTable
+            workers={workers}
+            setTriggerWorkers={setTriggerWorkers}
+            triggerWorkers={triggerWorkers}
+          />
         </div>
       </div>
     </div>
