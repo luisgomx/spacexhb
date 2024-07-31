@@ -9,6 +9,8 @@ interface Worker {
   category: string;
   halfTime: boolean;
   savedPayment: boolean;
+  totalHours: number;
+  totalMinutes: number;
 }
 
 const PayrollTable: React.FC<{}> = () => {
@@ -18,7 +20,9 @@ const PayrollTable: React.FC<{}> = () => {
   useEffect(() => {
     const fetchWorkersToPay = async () => {
       try {
-        const response = await fetch(`/api/validate-payments`);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/validate-payments`,
+        );
         const data = await response.json();
         setWorkersToPay(data);
       } catch (error) {
@@ -54,12 +58,14 @@ const PayrollTable: React.FC<{}> = () => {
                 Rango
               </th>
               <th scope="col" className="px-6 py-3">
+                Tiempo Total
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Guardapaga
               </th>
               <th scope="col" className="px-6 py-3">
                 Recorte
               </th>
-              {/* Added Rango */}
             </tr>
           </thead>
           <tbody>
@@ -78,6 +84,9 @@ const PayrollTable: React.FC<{}> = () => {
                   <td className="px-6 py-4">{worker.fecha}</td>
                   <td className="px-6 py-4">{worker.registradoPor}</td>
                   <td className="px-6 py-4">{worker.category}</td>
+                  <td className="px-6 py-4">
+                    {worker.totalHours || 0}h {worker.totalMinutes || 0}m
+                  </td>
                   <td className="px-6 py-4">
                     <Switch
                       checked={worker.savedPayment}
@@ -116,7 +125,7 @@ const PayrollTable: React.FC<{}> = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="px-6 py-4 text-center">
+                <td colSpan={7} className="px-6 py-4 text-center">
                   No hay trabajadores elegibles para pago.
                 </td>
               </tr>
