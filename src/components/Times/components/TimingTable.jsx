@@ -92,7 +92,7 @@ const TimingTable = () => {
 
   // Initialize WebSocket connection
   useEffect(() => {
-    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_API_WS_URL}`);
+    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_API_BASE_URL}`);
     setSocket(ws);
 
     ws.onmessage = (event) => {
