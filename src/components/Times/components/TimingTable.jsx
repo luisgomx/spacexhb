@@ -5,6 +5,7 @@ const TimingTable = () => {
   const [noTimingWorkers, setNoTimingWorkers] = useState([]);
   const [activeTimingWorkers, setActiveTimingWorkers] = useState([]);
   const [pausedTimingWorkers, setPausedTimingWorkers] = useState([]);
+  const [socket, setSocket] = useState(null);
 
   // Fetch worker data initially
   useEffect(() => {
@@ -88,6 +89,27 @@ const TimingTable = () => {
       console.error("Error updating timing status:", error);
     }
   };
+
+  // Initialize WebSocket connection
+  useEffect(() => {
+    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_API_WS_URL}`);
+    setSocket(ws);
+
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (
+        message.action === "start" ||
+        message.action === "pause" ||
+        message.action === "confirm"
+      ) {
+        refreshWorkers(); // Refresh workers on timing action
+      }
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []);
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
