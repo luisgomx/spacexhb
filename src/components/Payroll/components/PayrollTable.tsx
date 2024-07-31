@@ -15,7 +15,9 @@ interface Worker {
 
 const PayrollTable: React.FC<{}> = () => {
   const [workersToPay, setWorkersToPay] = useState<Worker[]>([]);
+  const [filteredWorkers, setFilteredWorkers] = useState<Worker[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchWorkersToPay = async () => {
@@ -25,6 +27,7 @@ const PayrollTable: React.FC<{}> = () => {
         );
         const data = await response.json();
         setWorkersToPay(data);
+        setFilteredWorkers(data);
       } catch (error) {
         console.error("Error fetching workers to pay:", error);
       } finally {
@@ -35,12 +38,61 @@ const PayrollTable: React.FC<{}> = () => {
     fetchWorkersToPay();
   }, []);
 
+  useEffect(() => {
+    const filterWorkers = () => {
+      const filtered = workersToPay.filter((worker) =>
+        worker.usuario.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+      setFilteredWorkers(filtered);
+    };
+
+    filterWorkers();
+  }, [searchTerm, workersToPay]);
+
+  const getWorkerWithMostTime = () => {
+    return filteredWorkers.reduce((maxWorker, worker) => {
+      const totalWorkerMinutes = worker.totalHours * 60 + worker.totalMinutes;
+      const maxWorkerMinutes =
+        maxWorker.totalHours * 60 + maxWorker.totalMinutes;
+      return totalWorkerMinutes > maxWorkerMinutes ? worker : maxWorker;
+    }, filteredWorkers[0]);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  const workerWithMostTime = getWorkerWithMostTime();
+
   return (
     <div>
+      <div className="mb-4 flex justify-center">
+        {workerWithMostTime && (
+          <div className="bg-dark rounded-xl bg-slate-700 p-4 text-white">
+            <h3 className="text-lg font-bold">Trabajador de la semana</h3>
+            <div className="flex justify-center">
+              <img
+                src={`https://www.habbo.es/habbo-imaging/avatarimage?user=${workerWithMostTime.usuario}&action=none&direction=3&head_direction=3&gesture=&size=l&headonly=0`}
+                alt=""
+              />
+            </div>
+            <p>{workerWithMostTime.usuario}</p>
+            <p>
+              {workerWithMostTime.totalHours}h {workerWithMostTime.totalMinutes}
+              m
+            </p>
+          </div>
+        )}
+      </div>
+      <div>
+        <input
+          type="text"
+          placeholder="Buscar trabajador"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="mb-3 w-100 rounded-lg border p-2 text-black"
+        />
+      </div>
       <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
         <table className="w-full text-left text-sm text-white rtl:text-right">
           <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">
@@ -69,8 +121,8 @@ const PayrollTable: React.FC<{}> = () => {
             </tr>
           </thead>
           <tbody>
-            {workersToPay.length > 0 ? (
-              workersToPay.map((worker) => (
+            {filteredWorkers.length > 0 ? (
+              filteredWorkers.map((worker) => (
                 <tr
                   key={worker._id}
                   className="bg-gray-700 border-gray-600 hover:bg-indigo-500"
