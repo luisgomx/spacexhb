@@ -6,7 +6,6 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import axios from "axios";
 
 // Define the shape of the AuthContext value
 interface AuthContextProps {
@@ -46,17 +45,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isAuthenticated, username]);
 
-  // Set default axios configuration to include credentials
-  axios.defaults.withCredentials = true;
-
   // Function to validate the user's session with the server
   const validateSession = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/api/validate-session`);
-      if (response.status !== 200) {
-        logout();
-      }
-    } catch (error) {
+    const response = await fetch(`${apiUrl}/api/validate-session`, {
+      method: "GET",
+      credentials: "include", // Use credentials for cookies
+    });
+
+    if (!response.ok) {
       logout();
     }
   };
@@ -70,50 +66,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Example login function
   const login = async (name: string, password: string) => {
-    try {
-      const response = await axios.post(`${apiUrl}/api/login`, {
-        name,
-        password,
-      });
+    const response = await fetch(`${apiUrl}/api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, password }),
+      credentials: "include", // Use credentials for cookies
+    });
 
-      if (response.status === 200) {
-        setUsername(name);
-        setIsAuthenticated(true);
-      } else {
-        throw new Error(response.data.error || "Login failed");
-      }
-    } catch (error: any) {
-      throw new Error(error.response?.data?.error || "Login failed");
+    if (response.ok) {
+      setUsername(name);
+      setIsAuthenticated(true);
+    } else {
+      const result = await response.json();
+      throw new Error(result.error || "Login failed");
     }
   };
 
   const logout = async () => {
-    try {
-      await axios.post(`${apiUrl}/api/logout`);
-      setIsAuthenticated(false);
-      setUsername("");
-    } catch (error) {
-      console.error("Error logging out:", error);
-    }
+    await fetch(`${apiUrl}/api/logout`, {
+      method: "POST",
+      credentials: "include", // Use credentials for cookies
+    });
+    setIsAuthenticated(false);
+    setUsername("");
   };
 
   const signUp = async (
     name: string,
     password: string,
   ): Promise<string | undefined> => {
-    try {
-      const response = await axios.post(`${apiUrl}/api/users`, {
-        name,
-        password,
-      });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password }),
+      },
+    );
 
-      if (response.status === 201) {
-        return "User registered";
-      } else {
-        return response.data.error;
-      }
-    } catch (error: any) {
-      return error.response?.data?.error || "Registration failed";
+    if (response.ok) {
+      return "User registered";
+    } else {
+      const result = await response.json();
+      return result.error;
     }
   };
 
