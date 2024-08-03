@@ -45,35 +45,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isAuthenticated, username]);
 
-  // Function to validate the user's session with the server
-  const validateSession = async () => {
-    const response = await fetch(`${apiUrl}/api/validate-session`, {
-      method: "GET",
-      credentials: "include", // Use credentials for cookies
-    });
-
-    if (!response.ok) {
-      logout();
-    }
-  };
-
-  // Run validation when component mounts or isAuthenticated changes
-  useEffect(() => {
-    if (isAuthenticated) {
-      validateSession();
-    }
-  }, [isAuthenticated]);
-
   // Example login function
   const login = async (name: string, password: string) => {
     const response = await fetch(`${apiUrl}/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, password }),
-      credentials: "include", // Use credentials for cookies
     });
 
     if (response.ok) {
+      const result = await response.json();
+      localStorage.setItem("token", result.token);
       setUsername(name);
       setIsAuthenticated(true);
     } else {
@@ -82,11 +64,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const logout = async () => {
-    await fetch(`${apiUrl}/api/logout`, {
-      method: "POST",
-      credentials: "include", // Use credentials for cookies
-    });
+  const logout = () => {
+    localStorage.removeItem("token");
     setIsAuthenticated(false);
     setUsername("");
   };
@@ -95,14 +74,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     name: string,
     password: string,
   ): Promise<string | undefined> => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, password }),
-      },
-    );
+    const response = await fetch(`${apiUrl}/api/users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, password }),
+    });
 
     if (response.ok) {
       return "User registered";

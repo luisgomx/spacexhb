@@ -12,9 +12,16 @@ const TimingTable = () => {
   // Fetch worker data initially
   useEffect(() => {
     const fetchWorkers = async () => {
+      const token = localStorage.getItem("token");
+
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/workers/timing`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+            },
+          },
         );
         if (response.ok) {
           const data = await response.json();
@@ -55,9 +62,16 @@ const TimingTable = () => {
 
   // Handle manual refresh
   const refreshWorkers = async () => {
+    const token = localStorage.getItem("token");
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/workers/timing`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+          },
+        },
       );
       if (response.ok) {
         const data = await response.json();
@@ -72,12 +86,17 @@ const TimingTable = () => {
 
   // Handle actions to start, pause, or confirm timing
   const handleTimingAction = async (usuario, action) => {
+    const token = localStorage.getItem("token");
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/timing`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+          },
           body: JSON.stringify({ usuario, action, username }),
         },
       );
@@ -186,7 +205,9 @@ const TimingTable = () => {
             {activeTimingWorkers.map((worker) => (
               <tr
                 key={worker._id}
-                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${worker.createdBy === username ? "bg-green-700" : ""}`}
+                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${
+                  worker.createdBy === username ? "bg-green-700" : ""
+                }`}
               >
                 <th
                   scope="row"
@@ -246,7 +267,9 @@ const TimingTable = () => {
             {pausedTimingWorkers.map((worker) => (
               <tr
                 key={worker._id}
-                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${worker.createdBy === username ? "bg-green-700" : ""}`}
+                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${
+                  worker.createdBy === username ? "bg-green-700" : ""
+                }`}
               >
                 <th
                   scope="row"

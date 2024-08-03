@@ -22,9 +22,16 @@ const PayrollTable: React.FC<{}> = () => {
 
   useEffect(() => {
     const fetchWorkersToPay = async () => {
+      const token = localStorage.getItem("token");
+
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/validate-payments`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+            },
+          },
         );
         const data = await response.json();
         const unpaidWorkers = data.workersToPay.filter(
@@ -78,13 +85,18 @@ const PayrollTable: React.FC<{}> = () => {
   };
 
   const handleMarkAsPaid = async (worker: Worker) => {
+    const token = localStorage.getItem("token");
+
     if (worker._id) {
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/worker/${worker._id}/mark-paid`,
           {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+            },
             body: JSON.stringify({ paid: true }),
           },
         );
@@ -109,7 +121,10 @@ const PayrollTable: React.FC<{}> = () => {
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/${worker.name}/mark-paid`,
           {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+            },
             body: JSON.stringify({ paid: true }),
           },
         );

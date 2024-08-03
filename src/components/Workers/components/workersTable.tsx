@@ -20,9 +20,16 @@ const WorkersTable: React.FC<{
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
 
   const fetchWorker = async (id: string) => {
+    const token = localStorage.getItem("token");
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/worker/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+          },
+        },
       );
       if (response.ok) {
         const worker = await response.json();

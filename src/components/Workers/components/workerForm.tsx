@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import axios from "axios";
 
 const WorkerForm: React.FC<{ onWorkerAdded: () => void }> = ({
   onWorkerAdded,
@@ -46,20 +47,20 @@ const WorkerForm: React.FC<{ onWorkerAdded: () => void }> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/worker`,
+        formData,
         {
-          method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(formData),
         },
       );
 
-      if (response.ok) {
+      if (response.status === 201) {
         onWorkerAdded();
       } else {
         console.error("Failed to add worker");

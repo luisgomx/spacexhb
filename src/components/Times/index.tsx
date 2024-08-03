@@ -9,9 +9,16 @@ const Times = () => {
 
   // Function to fetch workers from the server
   const fetchWorkers = async () => {
+    const token = localStorage.getItem("token");
+
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/workers`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+          },
+        },
       );
       if (!response.ok) {
         throw new Error("Failed to fetch workers");

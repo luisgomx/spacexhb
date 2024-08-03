@@ -54,6 +54,8 @@ const EditWorkerModal: React.FC<ModalProps> = ({
         halfTime,
       };
 
+      const token = localStorage.getItem("token");
+
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/worker/${worker._id}`,
@@ -61,6 +63,7 @@ const EditWorkerModal: React.FC<ModalProps> = ({
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
             },
             body: JSON.stringify(updatedWorker),
           },

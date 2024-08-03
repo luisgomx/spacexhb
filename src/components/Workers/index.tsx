@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
 import WorkerForm from "./components/workerForm";
 import WorkersTable from "./components/workersTable";
 
@@ -11,9 +10,17 @@ const Workers = () => {
 
   // Function to fetch workers from the server
   const fetchWorkers = async () => {
+    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/workers`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+          },
+        },
       );
       if (!response.ok) {
         throw new Error("Failed to fetch workers");
