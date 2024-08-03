@@ -1,3 +1,4 @@
+import { useAuth } from "@/context/AuthContext";
 import React, { useState, useEffect } from "react";
 
 const TimingTable = () => {
@@ -6,6 +7,7 @@ const TimingTable = () => {
   const [activeTimingWorkers, setActiveTimingWorkers] = useState([]);
   const [pausedTimingWorkers, setPausedTimingWorkers] = useState([]);
   const [socket, setSocket] = useState(null);
+  const { username } = useAuth();
 
   // Fetch worker data initially
   useEffect(() => {
@@ -76,7 +78,7 @@ const TimingTable = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ usuario, action }),
+          body: JSON.stringify({ usuario, action, username }),
         },
       );
 
@@ -112,7 +114,7 @@ const TimingTable = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
         <h2 className="mb-4 text-center text-lg font-bold">Trabajadores</h2>
         <table className="w-full text-left text-sm text-white rtl:text-right">
@@ -136,7 +138,7 @@ const TimingTable = () => {
             {noTimingWorkers.map((worker) => (
               <tr
                 key={worker._id}
-                className="bg-gray-700 border-gray-600 hover:bg-indigo-500"
+                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500`}
               >
                 <th
                   scope="row"
@@ -161,7 +163,7 @@ const TimingTable = () => {
       </div>
       <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
         <h2 className="mb-4 text-center text-lg font-bold">
-          Trabajores con time
+          Trabajadores con tiempo activo
         </h2>
         <table className="w-full text-left text-sm text-white rtl:text-right">
           <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">
@@ -173,6 +175,9 @@ const TimingTable = () => {
                 Inicio
               </th>
               <th scope="col" className="px-6 py-3">
+                Abierto Por
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Acciones
               </th>
             </tr>
@@ -181,7 +186,7 @@ const TimingTable = () => {
             {activeTimingWorkers.map((worker) => (
               <tr
                 key={worker._id}
-                className="bg-gray-700 border-gray-600 hover:bg-indigo-500"
+                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${worker.createdBy === username ? "bg-green-700" : ""}`}
               >
                 <th
                   scope="row"
@@ -194,6 +199,7 @@ const TimingTable = () => {
                     ? new Date(worker.startTime).toLocaleString()
                     : "-"}
                 </td>
+                <td className="px-6 py-4">{worker.createdBy || "-"}</td>
                 <td className="px-6 py-4">
                   <button
                     onClick={() => handleTimingAction(worker.usuario, "pause")}
@@ -229,6 +235,9 @@ const TimingTable = () => {
                 Pausa
               </th>
               <th scope="col" className="px-6 py-3">
+                Abierto Por
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Acciones
               </th>
             </tr>
@@ -237,7 +246,7 @@ const TimingTable = () => {
             {pausedTimingWorkers.map((worker) => (
               <tr
                 key={worker._id}
-                className="bg-gray-700 border-gray-600 hover:bg-indigo-500"
+                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${worker.createdBy === username ? "bg-green-700" : ""}`}
               >
                 <th
                   scope="row"
@@ -250,6 +259,7 @@ const TimingTable = () => {
                     ? new Date(worker.pauseTime).toLocaleString()
                     : "-"}
                 </td>
+                <td className="px-6 py-4">{worker.createdBy || "-"}</td>
                 <td className="px-6 py-4">
                   <button
                     onClick={() => handleTimingAction(worker.usuario, "start")}
