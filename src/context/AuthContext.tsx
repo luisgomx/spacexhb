@@ -1,4 +1,3 @@
-// src/context/AuthContext.tsx
 "use client";
 import React, {
   createContext,
@@ -46,21 +45,48 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isAuthenticated, username]);
 
+  // Function to validate the user's session with the server
+  const validateSession = async () => {
+    const response = await fetch(`${apiUrl}/api/validate-session`, {
+      method: "GET",
+      credentials: "include", // Use credentials for cookies
+    });
+
+    if (!response.ok) {
+      logout();
+    }
+  };
+
+  // Run validation when component mounts or isAuthenticated changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      validateSession();
+    }
+  }, [isAuthenticated]);
+
   // Example login function
   const login = async (name: string, password: string) => {
     const response = await fetch(`${apiUrl}/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, password }),
+      credentials: "include", // Use credentials for cookies
     });
 
     if (response.ok) {
       setUsername(name);
       setIsAuthenticated(true);
+    } else {
+      const result = await response.json();
+      throw new Error(result.error || "Login failed");
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await fetch(`${apiUrl}/api/logout`, {
+      method: "POST",
+      credentials: "include", // Use credentials for cookies
+    });
     setIsAuthenticated(false);
     setUsername("");
   };
