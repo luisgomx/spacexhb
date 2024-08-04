@@ -8,13 +8,21 @@ const LoginPage = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { login, isAuthenticated } = useAuth();
   const { push } = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(name, password);
-    push("/profile");
+    setLoading(true);
+    try {
+      await login(name, password);
+      push("/profile");
+    } catch (error) {
+      console.error("Login failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSignUp = () => {
@@ -65,8 +73,32 @@ const LoginPage = () => {
           <button
             type="submit"
             className="w-full rounded-lg bg-purple-500 p-3 font-semibold text-white transition hover:bg-purple-600"
+            disabled={loading}
           >
-            Entrar
+            {loading ? (
+              <svg
+                className="mx-auto h-5 w-5 animate-spin text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8v-8H4z"
+                ></path>
+              </svg>
+            ) : (
+              "Entrar"
+            )}
           </button>
         </form>
         <div className="mt-4 rounded-lg bg-white p-2 text-center">
