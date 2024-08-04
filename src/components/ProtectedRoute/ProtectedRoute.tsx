@@ -19,6 +19,13 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     }
   }, [isAuthenticated, router]);
 
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("isAuthenticated");
+    if (!storedAuth) {
+      router.push("/login");
+    }
+  }, [router]);
+
   if (!isAuthenticated && !loading) {
     return null; // Or a loading spinner
   }
