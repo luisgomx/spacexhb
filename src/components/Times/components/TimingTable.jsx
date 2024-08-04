@@ -87,7 +87,6 @@ const TimingTable = () => {
   // Handle actions to start, pause, or confirm timing
   const handleTimingAction = async (usuario, action) => {
     const token = localStorage.getItem("token");
-
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/timing`,
@@ -95,7 +94,7 @@ const TimingTable = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ usuario, action, username }),
         },
@@ -113,7 +112,12 @@ const TimingTable = () => {
 
   // Initialize WebSocket connection
   useEffect(() => {
-    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_API_BASE_URL}`);
+    const wsProtocol = process.env.NODE_ENV === "production" ? "wss" : "ws";
+    const wsBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL.replace(
+      /^https?/,
+      wsProtocol,
+    );
+    const ws = new WebSocket(wsBaseUrl);
     setSocket(ws);
 
     ws.onmessage = (event) => {
@@ -205,9 +209,7 @@ const TimingTable = () => {
             {activeTimingWorkers.map((worker) => (
               <tr
                 key={worker._id}
-                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${
-                  worker.createdBy === username ? "bg-green-700" : ""
-                }`}
+                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${worker.createdBy === username ? "bg-green-700" : ""}`}
               >
                 <th
                   scope="row"
@@ -267,9 +269,7 @@ const TimingTable = () => {
             {pausedTimingWorkers.map((worker) => (
               <tr
                 key={worker._id}
-                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${
-                  worker.createdBy === username ? "bg-green-700" : ""
-                }`}
+                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${worker.createdBy === username ? "bg-green-700" : ""}`}
               >
                 <th
                   scope="row"
