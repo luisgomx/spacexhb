@@ -48,38 +48,36 @@ const Assists: React.FC = () => {
   }
 
   return (
-    <div className="mx-auto max-w-7xl">
-      <div className="mt-4 grid grid-cols-1 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
-        <div className="flex flex-row gap-5">
-          {jdUsers.map((user, index) => (
-            <div
-              key={user.name}
-              className={`w-80 rounded-lg p-4 shadow-lg dark:border-strokedark dark:bg-boxdark ${
-                index === 0 ? "shadow-yellow-500" : ""
-              }`}
-            >
-              <div className="flex justify-center">
-                <img
-                  src={`https://www.habbo.es/habbo-imaging/avatarimage?user=${user.name}&action=none&direction=2&head_direction=2&gesture=&size=l&headonly=0`}
-                  alt={user.name}
-                  className="rounded-full"
-                />
-              </div>
+    <div className="mx-auto max-w-7xl px-4">
+      <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 md:mt-6 md:gap-6 lg:grid-cols-3 2xl:mt-7.5 2xl:gap-7.5">
+        {jdUsers.map((user, index) => (
+          <div
+            key={user.name}
+            className={`w-full rounded-lg p-4 shadow-lg dark:border-strokedark dark:bg-boxdark ${
+              index === 0 ? "shadow-yellow-500" : ""
+            }`}
+          >
+            <div className="flex justify-center">
+              <img
+                src={`https://www.habbo.es/habbo-imaging/avatarimage?user=${user.name}&action=none&direction=2&head_direction=2&gesture=&size=l&headonly=0`}
+                alt={user.name}
+                className="rounded-full"
+              />
+            </div>
 
-              <div className="text-center">
-                <div className="ml-4">
-                  <h2 className=" text-ceter text-title-lg font-extrabold">
-                    {user.name}
-                  </h2>
-                  <p className="">Minutos totales: {user.assistedTimes}</p>
-                  <p className="font-bold">
-                    Asistencias: {Math.floor(user.assistedTimes / 60)}
-                  </p>
-                </div>
+            <div className="text-center">
+              <div className="ml-4">
+                <h2 className="text-center text-title-lg font-extrabold">
+                  {user.name}
+                </h2>
+                <p className="">Minutos totales: {user.assistedTimes}</p>
+                <p className="font-bold">
+                  Asistencias: {Math.floor(user.assistedTimes / 60)}
+                </p>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
