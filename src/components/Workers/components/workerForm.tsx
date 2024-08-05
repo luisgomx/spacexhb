@@ -140,7 +140,7 @@ const WorkerForm: React.FC<{ onWorkerAdded: () => void }> = ({
             type="submit"
             className="w-full rounded-lg bg-purple-500 px-4 py-2 font-semibold text-white transition hover:bg-purple-600"
           >
-            Enviar
+            Registrar
           </button>
         </div>
       </form>

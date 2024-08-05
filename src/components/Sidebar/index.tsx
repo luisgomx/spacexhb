@@ -113,8 +113,8 @@ const menuGroups = [
             </defs>
           </svg>
         ),
-        label: "Nomina",
-        route: "/payroll",
+        label: "Trabajadores",
+        route: "/workers",
       },
       {
         icon: (
@@ -183,8 +183,9 @@ const menuGroups = [
             </defs>
           </svg>
         ),
-        label: "Trabajadores",
-        route: "/workers",
+
+        label: "Nomina",
+        route: "/payroll",
       },
     ],
   },

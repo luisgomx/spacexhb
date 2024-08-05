@@ -54,16 +54,15 @@ const EditWorkerModal: React.FC<ModalProps> = ({
         halfTime,
       };
 
-      const token = localStorage.getItem("token");
-
       try {
+        const token = localStorage.getItem("token");
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/worker/${worker._id}`,
           {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(updatedWorker),
           },
@@ -87,7 +86,7 @@ const EditWorkerModal: React.FC<ModalProps> = ({
   if (!isOpen || !worker) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-full max-w-md rounded-lg bg-black p-6 shadow-md sm:max-w-lg">
         <h2 className="mb-4 text-xl font-bold">Editar Trabajador</h2>
         <div className="mb-4 flex justify-center">

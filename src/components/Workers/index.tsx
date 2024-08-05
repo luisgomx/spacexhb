@@ -7,6 +7,7 @@ import WorkersTable from "./components/workersTable";
 const Workers = () => {
   const [workers, setWorkers] = useState([]);
   const [triggerWorkers, setTriggerWorkers] = useState(false);
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
   // Function to fetch workers from the server
   const fetchWorkers = async () => {
@@ -40,6 +41,11 @@ const Workers = () => {
   // Function to handle when a new worker is added
   const handleWorkerAdded = () => {
     fetchWorkers();
+    setIsFormVisible(false); // Hide the form after adding a worker
+  };
+
+  const toggleFormVisibility = () => {
+    setIsFormVisible((prev) => !prev);
   };
 
   return (
@@ -47,7 +53,13 @@ const Workers = () => {
       <div className="mt-4 grid grid-cols-1 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           <div className="col-span-12">
-            <WorkerForm onWorkerAdded={handleWorkerAdded} />
+            <button
+              onClick={toggleFormVisibility}
+              className="mb-4 rounded-lg bg-purple-500 px-4 py-2 font-semibold text-white transition hover:bg-purple-600"
+            >
+              {isFormVisible ? "Cerrar" : "Registrar trabajador"}
+            </button>
+            {isFormVisible && <WorkerForm onWorkerAdded={handleWorkerAdded} />}
           </div>
         </div>
         <div className="col-span-1">

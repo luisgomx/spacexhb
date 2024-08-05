@@ -6,9 +6,9 @@ interface Worker {
   usuario: string;
   fecha: string;
   registradoPor: string;
-  category: string; // Add this if needed
-  savedPayment: boolean; // Add savedPayment
-  halfTime: boolean; // Add halfTime
+  category: string;
+  savedPayment: boolean;
+  halfTime: boolean;
 }
 
 const WorkersTable: React.FC<{
@@ -18,6 +18,7 @@ const WorkersTable: React.FC<{
 }> = ({ workers, setTriggerWorkers, triggerWorkers }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchWorker = async (id: string) => {
     const token = localStorage.getItem("token");
@@ -57,30 +58,27 @@ const WorkersTable: React.FC<{
   };
 
   const handleSaveWorker = (updatedWorker: Worker) => {
-    // Replace this with your logic to save the updated worker data
     console.log("Updated worker:", updatedWorker);
-
-    // Example: If you are using a backend API, you can make a request here
-    /*
-    fetch('/api/update-worker', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedWorker),
-    }).then(response => response.json()).then(data => {
-      console.log('Worker updated:', data);
-    }).catch(error => {
-      console.error('Error updating worker:', error);
-    });
-    */
   };
+
+  const filteredWorkers = workers.filter((worker) =>
+    worker.usuario.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   return (
     <div>
-      <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Buscar trabajador"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full rounded-lg border p-3 text-black"
+        />
+      </div>
+      <div className="relative h-100 overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
         <table className="w-full text-left text-sm text-white rtl:text-right">
-          <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">
+          <thead className="bg-gray-300 sticky top-0 z-10 bg-black text-xs font-extrabold uppercase text-white">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Usuario
@@ -98,12 +96,11 @@ const WorkersTable: React.FC<{
                 Acciones
               </th>
               <th></th>
-              {/* Added Rango */}
             </tr>
           </thead>
           <tbody>
-            {workers.length > 0 ? (
-              workers.map((worker, index) => (
+            {filteredWorkers.length > 0 ? (
+              filteredWorkers.map((worker, index) => (
                 <tr
                   key={index}
                   className="bg-gray-700 border-gray-600 hover:bg-indigo-500"
@@ -116,7 +113,7 @@ const WorkersTable: React.FC<{
                   </th>
                   <td className="px-6 py-4">{worker.fecha}</td>
                   <td className="px-6 py-4">{worker.registradoPor}</td>
-                  <td className="px-6 py-4">{worker.category}</td>{" "}
+                  <td className="px-6 py-4">{worker.category}</td>
                   <td className="">
                     <button
                       onClick={() => handleEditClick(worker)}
@@ -137,7 +134,6 @@ const WorkersTable: React.FC<{
                       </span>
                     )}
                   </td>
-                  {/* Added Rango */}
                 </tr>
               ))
             ) : (
