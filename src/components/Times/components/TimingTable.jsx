@@ -6,6 +6,8 @@ const TimingTable = () => {
   const [noTimingWorkers, setNoTimingWorkers] = useState([]);
   const [activeTimingWorkers, setActiveTimingWorkers] = useState([]);
   const [pausedTimingWorkers, setPausedTimingWorkers] = useState([]);
+  const [filteredWorkers, setFilteredWorkers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [socket, setSocket] = useState(null);
   const { username } = useAuth();
 
@@ -26,6 +28,7 @@ const TimingTable = () => {
         if (response.ok) {
           const data = await response.json();
           setWorkers(data);
+          setFilteredWorkers(data);
         } else {
           console.error("Failed to fetch workers");
         }
@@ -40,15 +43,15 @@ const TimingTable = () => {
   // Categorize workers every time the workers array updates
   useEffect(() => {
     const categorizeWorkers = () => {
-      const noTiming = workers.filter(
+      const noTiming = filteredWorkers.filter(
         (worker) =>
           worker.timingStatus === "inactive" ||
           worker.timingStatus === "confirmed",
       );
-      const activeTiming = workers.filter(
+      const activeTiming = filteredWorkers.filter(
         (worker) => worker.timingStatus === "active",
       );
-      const pausedTiming = workers.filter(
+      const pausedTiming = filteredWorkers.filter(
         (worker) => worker.timingStatus === "paused",
       );
 
@@ -58,7 +61,7 @@ const TimingTable = () => {
     };
 
     categorizeWorkers();
-  }, [workers]);
+  }, [filteredWorkers]);
 
   // Handle manual refresh
   const refreshWorkers = async () => {
@@ -76,6 +79,7 @@ const TimingTable = () => {
       if (response.ok) {
         const data = await response.json();
         setWorkers(data);
+        setFilteredWorkers(data);
       } else {
         console.error("Failed to refresh workers");
       }
@@ -136,173 +140,210 @@ const TimingTable = () => {
     };
   }, []);
 
+  // Function to calculate and format total time
+  const formatTotalTime = (totalMinutes) => {
+    const formattedHours = Math.floor(totalMinutes / 60);
+    const formattedMinutes = totalMinutes % 60;
+    return `${formattedHours}h ${formattedMinutes}m`;
+  };
+
+  // Handle search
+  useEffect(() => {
+    const filtered = workers.filter((worker) =>
+      worker.usuario.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+    setFilteredWorkers(filtered);
+  }, [searchTerm, workers]);
+
+  // Sort noTimingWorkers based on totalMinutes in descending order
+  const sortedNoTimingWorkers = noTimingWorkers.sort(
+    (a, b) => b.totalMinutes - a.totalMinutes,
+  );
+
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
-        <h2 className="mb-4 text-center text-lg font-bold">Trabajadores</h2>
-        <table className="w-full text-left text-sm text-white rtl:text-right">
-          <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                Usuario
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Horas
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Minutos
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {noTimingWorkers.map((worker) => (
-              <tr
-                key={worker._id}
-                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500`}
-              >
-                <th
-                  scope="row"
-                  className="whitespace-nowrap px-6 py-4 font-medium text-white"
-                >
-                  {worker.usuario}
+    <div>
+      <input
+        type="text"
+        placeholder="Buscar trabajador"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="mb-4 w-full rounded-lg border p-2 text-black"
+      />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="relative h-100 overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
+          <h2 className="mb-4 text-center text-lg font-bold">Trabajadores</h2>
+          <table className="w-full text-left text-sm text-white rtl:text-right">
+            <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Usuario
                 </th>
-                <td className="px-6 py-4">{worker.totalHours || 0}</td>
-                <td className="px-6 py-4">{worker.totalMinutes || 0}</td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => handleTimingAction(worker.usuario, "start")}
-                    className="text-blue-400 hover:underline"
-                  >
-                    Iniciar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
-        <h2 className="mb-4 text-center text-lg font-bold">
-          Trabajadores con tiempo activo
-        </h2>
-        <table className="w-full text-left text-sm text-white rtl:text-right">
-          <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                Usuario
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Inicio
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Abierto Por
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {activeTimingWorkers.map((worker) => (
-              <tr
-                key={worker._id}
-                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${worker.createdBy === username ? "bg-green-700" : ""}`}
-              >
-                <th
-                  scope="row"
-                  className="whitespace-nowrap px-6 py-4 font-medium text-white"
-                >
-                  {worker.usuario}
+                <th scope="col" className="px-6 py-3">
+                  Tiempo Total
                 </th>
-                <td className="px-6 py-4">
-                  {worker.startTime
-                    ? new Date(worker.startTime).toLocaleString()
-                    : "-"}
-                </td>
-                <td className="px-6 py-4">{worker.createdBy || "-"}</td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => handleTimingAction(worker.usuario, "pause")}
-                    className="mr-2 text-yellow-400 hover:underline"
-                  >
-                    Pausar
-                  </button>
-                  <button
-                    onClick={() =>
-                      handleTimingAction(worker.usuario, "confirm")
-                    }
-                    className="text-green-400 hover:underline"
-                  >
-                    Confirmar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
-        <h2 className="mb-4 text-center text-lg font-bold">
-          Trabajadores pausados
-        </h2>
-        <table className="w-full text-left text-sm text-white rtl:text-right">
-          <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                Usuario
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Pausa
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Abierto Por
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {pausedTimingWorkers.map((worker) => (
-              <tr
-                key={worker._id}
-                className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${worker.createdBy === username ? "bg-green-700" : ""}`}
-              >
-                <th
-                  scope="row"
-                  className="whitespace-nowrap px-6 py-4 font-medium text-white"
-                >
-                  {worker.usuario}
+                <th scope="col" className="px-6 py-3">
+                  Acciones
                 </th>
-                <td className="px-6 py-4">
-                  {worker.pauseTime
-                    ? new Date(worker.pauseTime).toLocaleString()
-                    : "-"}
-                </td>
-                <td className="px-6 py-4">{worker.createdBy || "-"}</td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => handleTimingAction(worker.usuario, "start")}
-                    className="mr-2 text-blue-400 hover:underline"
-                  >
-                    Reiniciar
-                  </button>
-                  <button
-                    onClick={() =>
-                      handleTimingAction(worker.usuario, "confirm")
-                    }
-                    className="text-green-400 hover:underline"
-                  >
-                    Confirmar
-                  </button>
-                </td>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {sortedNoTimingWorkers.map((worker) => (
+                <tr
+                  key={worker._id}
+                  className={`bg-gray-700 border-gray-600 hover:bg-indigo-500`}
+                >
+                  <th
+                    scope="row"
+                    className="whitespace-nowrap px-6 py-4 font-medium text-white"
+                  >
+                    {worker.usuario}
+                  </th>
+                  <td className="px-6 py-4">
+                    {formatTotalTime(worker.totalMinutes)}
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() =>
+                        handleTimingAction(worker.usuario, "start")
+                      }
+                      className="text-blue-400 hover:underline"
+                    >
+                      Iniciar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
+          <h2 className="mb-4 text-center text-lg font-bold">
+            Trabajadores con tiempo activo
+          </h2>
+          <table className="w-full text-left text-sm text-white rtl:text-right">
+            <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Usuario
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Inicio
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Abierto Por
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {activeTimingWorkers.map((worker) => (
+                <tr
+                  key={worker._id}
+                  className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${
+                    worker.createdBy === username ? "bg-green-700" : ""
+                  }`}
+                >
+                  <th
+                    scope="row"
+                    className="whitespace-nowrap px-6 py-4 font-medium text-white"
+                  >
+                    {worker.usuario}
+                  </th>
+                  <td className="px-6 py-4">
+                    {worker.startTime
+                      ? new Date(worker.startTime).toLocaleString()
+                      : "-"}
+                  </td>
+                  <td className="px-6 py-4">{worker.createdBy || "-"}</td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() =>
+                        handleTimingAction(worker.usuario, "pause")
+                      }
+                      className="mr-2 text-yellow-400 hover:underline"
+                    >
+                      Pausar
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleTimingAction(worker.usuario, "confirm")
+                      }
+                      className="text-green-400 hover:underline"
+                    >
+                      Confirmar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
+          <h2 className="mb-4 text-center text-lg font-bold">
+            Trabajadores pausados
+          </h2>
+          <table className="w-full text-left text-sm text-white rtl:text-right">
+            <thead className="bg-gray-300 text-xs font-extrabold uppercase text-white">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Usuario
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Pausa
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Pausado Por
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {pausedTimingWorkers.map((worker) => (
+                <tr
+                  key={worker._id}
+                  className={`bg-gray-700 border-gray-600 hover:bg-indigo-500 ${
+                    worker.createdBy === username ? "bg-green-700" : ""
+                  }`}
+                >
+                  <th
+                    scope="row"
+                    className="whitespace-nowrap px-6 py-4 font-medium text-white"
+                  >
+                    {worker.usuario}
+                  </th>
+                  <td className="px-6 py-4">
+                    {worker.pauseTime
+                      ? new Date(worker.pauseTime).toLocaleString()
+                      : "-"}
+                  </td>
+                  <td className="px-6 py-4">{worker.createdBy || "-"}</td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() =>
+                        handleTimingAction(worker.usuario, "start")
+                      }
+                      className="mr-2 text-blue-400 hover:underline"
+                    >
+                      Reiniciar
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleTimingAction(worker.usuario, "confirm")
+                      }
+                      className="text-green-400 hover:underline"
+                    >
+                      Confirmar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

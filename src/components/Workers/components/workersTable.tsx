@@ -76,7 +76,7 @@ const WorkersTable: React.FC<{
           className="w-full rounded-lg border p-3 text-black"
         />
       </div>
-      <div className="relative h-100 overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
+      <div className="relative h-150 overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
         <table className="w-full text-left text-sm text-white rtl:text-right">
           <thead className="bg-gray-300 sticky top-0 z-10 bg-black text-xs font-extrabold uppercase text-white">
             <tr>
