@@ -73,7 +73,7 @@ const WorkersTable: React.FC<{
           placeholder="Buscar trabajador"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full rounded-lg border p-3 text-black"
+          className="w-full rounded-lg border p-2 text-black"
         />
       </div>
       <div className="relative h-150 overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
