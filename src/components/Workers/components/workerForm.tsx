@@ -104,10 +104,11 @@ const WorkerForm: React.FC<{ onWorkerAdded: () => void }> = ({
               Selecciona rango
             </option>
             <option value="SEG">SEG</option>
-            <option value="TRN">TRN</option>
+            <option value="TRN">TEC</option>
             <option value="LOG">LOG</option>
+            <option value="HR">HR</option>
+            <option value="DIR">DIR</option>
             <option value="OP">OP</option>
-            <option value="JD">JD</option>
           </select>
         </div>
         <div>
