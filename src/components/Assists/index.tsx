@@ -49,11 +49,11 @@ const Assists: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-7xl px-4">
-      <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 md:mt-6 md:gap-6 lg:grid-cols-3 2xl:mt-7.5 2xl:gap-7.5">
+      <div className="mt-4 flex flex-wrap gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         {jdUsers.map((user, index) => (
           <div
             key={user.name}
-            className={`w-full rounded-lg p-4 shadow-lg dark:border-strokedark dark:bg-boxdark ${
+            className={`w-full rounded-lg p-4 shadow-lg dark:border-strokedark dark:bg-boxdark sm:w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/4 ${
               index === 0 ? "shadow-yellow-500" : ""
             }`}
           >
