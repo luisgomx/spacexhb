@@ -19,9 +19,9 @@ const UserProfile: React.FC = () => {
       <div className="mt-5 grid grid-cols-2">
         <div className="space-y-3 font-bold">
           <p>Usuario</p>
-          <p>Firma</p>
+          {/* <p>Firma</p>
           <p>Ultima misión</p>
-          <p>Siguiente ascenso:</p>
+          <p>Siguiente ascenso:</p> */}
         </div>
         <div className="space-y-3">
           <p>{username}</p>
