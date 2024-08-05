@@ -34,7 +34,7 @@ const PayrollTable: React.FC<{}> = () => {
           },
         );
         const data = await response.json();
-        const unpaidWorkers = data.workersToPay.filter(
+        const unpaidWorkers = data?.workersToPay?.filter(
           (worker: any) => !worker.paid,
         );
         const paidWorkers = data.workersToPay.filter(
