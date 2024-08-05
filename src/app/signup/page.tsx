@@ -99,7 +99,8 @@ const SignUpPage = () => {
           <button
             type="submit"
             className="w-full rounded-lg bg-purple-500 p-3 font-semibold text-white transition hover:bg-purple-600 disabled:bg-purple-300"
-            disabled={isLoading} // Disable button while loading
+            // disabled={isLoading}
+            disabled
           >
             {isLoading ? (
               <svg
