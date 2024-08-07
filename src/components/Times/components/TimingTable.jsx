@@ -123,6 +123,7 @@ const TimingTable = () => {
 
       if (response.ok) {
         await refreshWorkers(); // Refresh worker data after action
+        setSearchTerm("");
       } else {
         console.error("Failed to update timing status");
       }
@@ -166,6 +167,40 @@ const TimingTable = () => {
     const formattedMinutes = totalMinutes % 60;
     return `${formattedHours}h ${formattedMinutes}m`;
   };
+
+  // Calculate running time
+  const calculateRunningTime = (startTime, totalMinutes) => {
+    if (totalMinutes === undefined) {
+      totalMinutes = 0;
+    }
+    const now = new Date();
+    const start = new Date(startTime);
+    const elapsedSeconds = Math.floor((now - start) / 1000);
+    const totalElapsedMinutes = totalMinutes + Math.floor(elapsedSeconds / 60);
+    return formatTotalTime(totalElapsedMinutes);
+  };
+
+  // Update running time every second
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setFilteredWorkers((prevWorkers) =>
+        prevWorkers.map((worker) => {
+          if (worker.timingStatus === "active") {
+            return {
+              ...worker,
+              runningTime: calculateRunningTime(
+                worker.startTime,
+                worker.totalMinutes,
+              ),
+            };
+          }
+          return worker;
+        }),
+      );
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [filteredWorkers]);
 
   // Handle search
   useEffect(() => {
@@ -258,7 +293,7 @@ const TimingTable = () => {
                   Usuario
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Inicio
+                  Tiempo Acumulado
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Abierto Por
@@ -287,9 +322,20 @@ const TimingTable = () => {
                     {worker.usuario}
                   </th>
                   <td className="px-6 py-4">
-                    {worker.startTime
-                      ? new Date(worker.startTime).toLocaleString()
-                      : "-"}
+                    <div>
+                      <p>
+                        {worker.startTime
+                          ? new Date(worker.startTime).toLocaleTimeString()
+                          : "-"}
+                      </p>
+                      <p>
+                        {worker.runningTime ||
+                          calculateRunningTime(
+                            worker.startTime,
+                            worker.totalMinutes,
+                          )}
+                      </p>
+                    </div>
                   </td>
                   <td className="px-6 py-4">{worker.createdBy || "-"}</td>
                   <td className="px-6 py-4">
@@ -303,7 +349,7 @@ const TimingTable = () => {
                       onClick={() => handleTimingAction(worker, "confirm")}
                       className=" mt-2 rounded-lg bg-rose-400 p-2 font-bold text-black hover:bg-rose-600"
                     >
-                      Confirmar
+                      Cerrar
                     </button>
                   </td>
                 </tr>
@@ -367,7 +413,7 @@ const TimingTable = () => {
                       onClick={() => handleTimingAction(worker, "confirm")}
                       className=" mt-2 rounded-lg bg-rose-400 p-2 font-bold text-black hover:bg-rose-600"
                     >
-                      Confirmar
+                      Cerrar
                     </button>
                   </td>
                 </tr>
