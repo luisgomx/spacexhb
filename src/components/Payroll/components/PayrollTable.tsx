@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import * as XLSX from "xlsx";
 
 interface Worker {
   _id?: string;
@@ -148,6 +149,67 @@ const PayrollTable: React.FC<{}> = () => {
     }
   };
 
+  const exportToExcel = () => {
+    // Calculate totals
+    const totalToPay = filteredWorkers.reduce(
+      (total, worker) => total + worker.paymentAmount,
+      0,
+    );
+    const totalPaid = paidWorkers.reduce(
+      (total, worker) => total + worker.paymentAmount,
+      0,
+    );
+
+    // Get the current date
+    const currentDate = new Date().toLocaleDateString();
+
+    // Prepare data for export
+    const dataToExport = [
+      { Usuario: "", Rango: "", "Tiempo Total": "", Pago: "", Estado: "" }, // Empty row
+
+      { Usuario: "", Rango: "", "Tiempo Total": "", Pago: "", Estado: "" }, // Another empty row for spacing
+      ...filteredWorkers.map((worker) => ({
+        Usuario: worker.usuario || worker.name,
+        Rango: worker.category || "JD",
+        "Tiempo Total":
+          worker.category === "JD"
+            ? `${Math.floor((worker.totalMinutes || 0) / 60)} assist`
+            : `${worker.totalHours || 0}h ${worker.totalMinutes || 0}m`,
+        Pago: `${worker.paymentAmount}c`,
+        Estado: worker.paid ? "Pagado" : "No pagado",
+      })),
+      {
+        Usuario: `Fecha: ${currentDate}`,
+        Rango: "",
+        "Tiempo Total": "",
+        Pago: "",
+        Estado: "",
+      },
+      {
+        Usuario: `Total Créditos a Pagar: ${totalToPay}c`,
+        Rango: "",
+        "Tiempo Total": "",
+        Pago: "",
+        Estado: "",
+      },
+      {
+        Usuario: `Total Créditos Pagados: ${totalPaid}c`,
+        Rango: "",
+        "Tiempo Total": "",
+        Pago: "",
+        Estado: "",
+      },
+    ];
+
+    // Generate Excel sheet and workbook
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Trabajadores");
+
+    // Export the workbook to a file
+    XLSX.writeFile(workbook, "Trabajadores_Pago.xlsx");
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -201,15 +263,24 @@ const PayrollTable: React.FC<{}> = () => {
           </div>
         </div>
       </div>
-      <div>
-        <input
-          type="text"
-          placeholder="Buscar trabajador"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="mb-3 w-auto rounded-lg border p-2 text-black md:w-100"
-        />
+      <div className="flex justify-between">
+        <div>
+          <input
+            type="text"
+            placeholder="Buscar trabajador"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="mb-3 w-auto rounded-lg border p-2 text-black md:w-100"
+          />
+        </div>
+        <button
+          onClick={exportToExcel}
+          className="mb-4 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+        >
+          Exportar a Excel
+        </button>
       </div>
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="relative overflow-x-auto shadow-md dark:border-strokedark dark:bg-boxdark sm:rounded-lg">
           <h2 className="mb-4 text-center text-lg font-bold">

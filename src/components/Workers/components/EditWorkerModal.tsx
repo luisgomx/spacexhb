@@ -9,6 +9,8 @@ interface Worker {
   category: string;
   savedPayment: boolean;
   halfTime: boolean;
+  savedPaymentEndDate?: string;
+  halfTimeEndDate?: string;
 }
 
 interface ModalProps {
@@ -34,6 +36,12 @@ const EditWorkerModal: React.FC<ModalProps> = ({
     worker?.savedPayment || false,
   );
   const [halfTime, setHalfTime] = useState(worker?.halfTime || false);
+  const [savedPaymentEndDate, setSavedPaymentEndDate] = useState(
+    worker?.savedPaymentEndDate || "",
+  );
+  const [halfTimeEndDate, setHalfTimeEndDate] = useState(
+    worker?.halfTimeEndDate || "",
+  );
 
   useEffect(() => {
     if (worker) {
@@ -41,6 +49,23 @@ const EditWorkerModal: React.FC<ModalProps> = ({
       setCategory(worker.category);
       setSavedPayment(worker.savedPayment);
       setHalfTime(worker.halfTime);
+      setSavedPaymentEndDate(worker.savedPaymentEndDate || "");
+      setHalfTimeEndDate(worker.halfTimeEndDate || "");
+
+      // Automatically turn off switches if the end date has passed
+      const today = new Date().toISOString().split("T")[0];
+      if (
+        worker.savedPaymentEndDate &&
+        new Date(worker.savedPaymentEndDate) < new Date(today)
+      ) {
+        setSavedPayment(false);
+      }
+      if (
+        worker.halfTimeEndDate &&
+        new Date(worker.halfTimeEndDate) < new Date(today)
+      ) {
+        setHalfTime(false);
+      }
     }
   }, [worker]);
 
@@ -52,6 +77,8 @@ const EditWorkerModal: React.FC<ModalProps> = ({
         category,
         savedPayment,
         halfTime,
+        savedPaymentEndDate,
+        halfTimeEndDate,
       };
 
       try {
@@ -143,6 +170,12 @@ const EditWorkerModal: React.FC<ModalProps> = ({
               width={48}
               className="ml-2"
             />
+            <input
+              type="date"
+              value={savedPaymentEndDate}
+              onChange={(e) => setSavedPaymentEndDate(e.target.value)}
+              className="mt-2 w-full rounded-lg border p-2 text-black"
+            />
           </div>
           <div className="mb-4 sm:ml-4">
             <label className="text-gray-700 block text-sm font-medium">
@@ -162,6 +195,12 @@ const EditWorkerModal: React.FC<ModalProps> = ({
               width={48}
               className="ml-2"
             />
+            <input
+              type="date"
+              value={halfTimeEndDate}
+              onChange={(e) => setHalfTimeEndDate(e.target.value)}
+              className="mt-2 w-full rounded-lg border p-2 text-black"
+            />
           </div>
         </div>
         <div className="flex justify-end">
@@ -169,13 +208,13 @@ const EditWorkerModal: React.FC<ModalProps> = ({
             onClick={onClose}
             className="bg-gray-500 mr-2 rounded-lg px-4 py-2"
           >
-            Cancel
+            Cancelar
           </button>
           <button
             onClick={handleSave}
             className="rounded-lg bg-indigo-600 px-4 py-2 text-white"
           >
-            Save
+            Guardar
           </button>
         </div>
       </div>
