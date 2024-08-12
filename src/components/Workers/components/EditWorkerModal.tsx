@@ -170,6 +170,9 @@ const EditWorkerModal: React.FC<ModalProps> = ({
               width={48}
               className="ml-2"
             />
+            <label className="text-gray-700 block text-sm font-medium">
+              Fecha fin
+            </label>
             <input
               type="date"
               value={savedPaymentEndDate}
@@ -195,6 +198,9 @@ const EditWorkerModal: React.FC<ModalProps> = ({
               width={48}
               className="ml-2"
             />
+            <label className="text-gray-700 block text-sm font-medium">
+              Fecha fin
+            </label>
             <input
               type="date"
               value={halfTimeEndDate}
