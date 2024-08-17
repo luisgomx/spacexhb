@@ -94,7 +94,7 @@ const TimingTable = () => {
     }
   };
 
-  // Handle actions to start, pause, or confirm timing
+  // Handle actions to start, pause, confirm, or transfer timing
   const handleTimingAction = async (worker, action) => {
     setCurrentAction(action);
     setCurrentWorker(worker);
@@ -150,7 +150,8 @@ const TimingTable = () => {
       if (
         message.action === "start" ||
         message.action === "pause" ||
-        message.action === "confirm"
+        message.action === "confirm" ||
+        message.action === "transfer"
       ) {
         refreshWorkers(); // Refresh workers on timing action
       }
@@ -223,6 +224,8 @@ const TimingTable = () => {
         return "pausar";
       case "confirm":
         return "cerrar";
+      case "transfer":
+        return "transferir";
       default:
         return action;
     }
@@ -301,7 +304,7 @@ const TimingTable = () => {
                 <th
                   scope="col"
                   className="px-6 py-3"
-                  style={{ width: "200px" }}
+                  style={{ width: "300px" }} // Increased width to accommodate Transfer button
                 >
                   Acciones
                 </th>
@@ -340,6 +343,12 @@ const TimingTable = () => {
                   <td className="px-6 py-4">{worker.createdBy || "-"}</td>
                   <td className="px-6 py-4">
                     <button
+                      onClick={() => handleTimingAction(worker, "transfer")}
+                      className="mr-2 mt-2 rounded-lg bg-blue-400 p-2 font-bold text-black hover:bg-blue-600"
+                    >
+                      Transferir
+                    </button>
+                    <button
                       onClick={() => handleTimingAction(worker, "pause")}
                       className="mr-2 rounded-lg bg-yellow-400 p-2 font-bold text-black hover:bg-yellow-600"
                     >
@@ -376,7 +385,7 @@ const TimingTable = () => {
                 <th
                   scope="col"
                   className="px-6 py-3"
-                  style={{ width: "200px" }}
+                  style={{ width: "300px" }} // Increased width to accommodate Transfer button
                 >
                   Acciones
                 </th>
@@ -403,6 +412,12 @@ const TimingTable = () => {
                   </td>
                   <td className="px-6 py-4">{worker.createdBy || "-"}</td>
                   <td className="px-6 py-4">
+                    <button
+                      onClick={() => handleTimingAction(worker, "transfer")}
+                      className=" mr-2 mt-2 rounded-lg bg-blue-400 p-2 font-bold text-black hover:bg-blue-600"
+                    >
+                      Transferir
+                    </button>
                     <button
                       onClick={() => handleTimingAction(worker, "start")}
                       className="mr-2 rounded-lg bg-blue-400 p-2 font-bold text-black hover:bg-blue-600"
@@ -433,7 +448,6 @@ const TimingTable = () => {
             ¿Estás seguro de que quieres {actionText(currentAction)} el tiempo
             para {currentWorker?.usuario}?
           </p>
-          {/* <p>Abierto por: {currentWorker?.createdBy}</p> */}
           <div className="mt-6 flex justify-end gap-4">
             <button
               onClick={() => setModalIsOpen(false)}
