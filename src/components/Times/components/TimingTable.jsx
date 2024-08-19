@@ -2,6 +2,10 @@ import { useAuth } from "@/context/AuthContext";
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { ClipLoader } from "react-spinners";
+import { FaPause } from "react-icons/fa";
+import { IoIosCloseCircle } from "react-icons/io";
+import { FaWindowClose } from "react-icons/fa";
+import { TbArrowsTransferUp } from "react-icons/tb";
 
 const TimingTable = () => {
   const [workers, setWorkers] = useState([]);
@@ -345,23 +349,23 @@ const TimingTable = () => {
                     {worker.createdBy !== username && (
                       <button
                         onClick={() => handleTimingAction(worker, "transfer")}
-                        className="mr-2 mt-2 rounded-lg bg-blue-400 p-2 font-bold text-black hover:bg-blue-600"
+                        className="mr-2 mt-2 rounded-lg bg-blue-400 p-3 font-bold text-black hover:bg-blue-600"
                       >
-                        Transferir
+                        <TbArrowsTransferUp size="" />
                       </button>
                     )}
 
                     <button
                       onClick={() => handleTimingAction(worker, "pause")}
-                      className="mr-2 rounded-lg bg-yellow-400 p-2 font-bold text-black hover:bg-yellow-600"
+                      className="mr-2 rounded-lg bg-yellow-400 p-3 font-bold text-black hover:bg-yellow-600"
                     >
-                      Pausar
+                      <FaPause />
                     </button>
                     <button
                       onClick={() => handleTimingAction(worker, "confirm")}
-                      className=" mt-2 rounded-lg bg-rose-400 p-2 font-bold text-black hover:bg-rose-600"
+                      className=" mt-2 rounded-lg bg-rose-400 p-3 font-bold text-black hover:bg-rose-600"
                     >
-                      Cerrar
+                      <FaWindowClose />
                     </button>
                   </td>
                 </tr>
