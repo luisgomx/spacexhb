@@ -1,4 +1,4 @@
-"use client";
+mi"use client";
 
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -99,8 +99,8 @@ const SignUpPage = () => {
           <button
             type="submit"
             className="w-full rounded-lg bg-purple-500 p-3 font-semibold text-white transition hover:bg-purple-600 disabled:bg-purple-300"
-            // disabled={isLoading}
-            disabled
+            disabled={isLoading}
+            //disabled
           >
             {isLoading ? (
               <svg
